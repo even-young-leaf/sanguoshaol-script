@@ -1,0 +1,642 @@
+{
+  "签到": {
+    "enabled": true,
+    "entry_labels": [
+      "福利"
+    ],
+    "entry_region": [
+      0,
+      0.14,
+      0.09,
+      0.65
+    ],
+    "page_markers": [
+      {
+        "labels": [
+          "福利"
+        ],
+        "region": [
+          0.43,
+          0.22,
+          0.14,
+          0.06
+        ],
+        "confidence": 0.4
+      },
+      {
+        "labels": [
+          "每日签到"
+        ],
+        "region": [
+          0.14,
+          0.35,
+          0.11,
+          0.13
+        ]
+      }
+    ],
+    "action_labels": [
+      "签到"
+    ],
+    "action_region": [
+      0.73,
+      0.73,
+      0.1,
+      0.14
+    ],
+    "done_labels": [
+      "已签到",
+      "今日已签到",
+      "补签"
+    ],
+    "success_labels": [
+      "获得奖励",
+      "恭喜获得",
+      "签到成功",
+      "奖励获得",
+      "获得物品"
+    ],
+    "success_region": [
+      0.25,
+      0.25,
+      0.5,
+      0.5
+    ],
+    "action_template": {
+      "file": "templates/签到按钮.png",
+      "reference_size": [
+        3314,
+        2158
+      ],
+      "region": [
+        0.73,
+        0.73,
+        0.1,
+        0.14
+      ],
+      "label": "签到",
+      "threshold": 0.94,
+      "max_color_error": 22
+    },
+    "done_template": {
+      "file": "templates/签到完成_补签按钮.png",
+      "reference_size": [
+        3314,
+        2158
+      ],
+      "region": [
+        0.73,
+        0.73,
+        0.1,
+        0.14
+      ],
+      "label": "今日已签到（按钮已变为补签）",
+      "threshold": 0.94,
+      "max_color_error": 22
+    }
+  },
+  "任务": {
+    "enabled": true,
+    "entry_labels": [
+      "任务"
+    ],
+    "entry_region": [
+      0,
+      0.15,
+      0.09,
+      0.65
+    ],
+    "page_markers": [
+      {
+        "labels": [
+          "任务"
+        ],
+        "region": [
+          0.45,
+          0.22,
+          0.1,
+          0.05
+        ]
+      },
+      {
+        "labels": [
+          "今日完成任务数"
+        ],
+        "region": [
+          0.24,
+          0.38,
+          0.14,
+          0.05
+        ]
+      }
+    ],
+    "action_labels": [
+      "领取"
+    ],
+    "action_region": [
+      0.72,
+      0.45,
+      0.1,
+      0.38
+    ],
+    "done_labels": [],
+    "success_labels": [
+      "获得奖励",
+      "恭喜获得",
+      "获得物品"
+    ],
+    "success_region": [
+      0.25,
+      0.25,
+      0.5,
+      0.5
+    ],
+    "choose_first": true,
+    "green_button": true,
+    "verify_count_drop": true,
+    "repeat": true
+  },
+  "官阶": {
+    "enabled": true,
+    "entry_labels": [
+      "官阶"
+    ],
+    "entry_region": [
+      0.8,
+      0.91,
+      0.1,
+      0.09
+    ],
+    "page_markers": [
+      {
+        "labels": [
+          "官阶"
+        ],
+        "region": [
+          0.45,
+          0.22,
+          0.1,
+          0.05
+        ]
+      }
+    ],
+    "action_labels": [
+      "每日俸禄",
+      "每日俸碌"
+    ],
+    "action_region": [
+      0.68,
+      0.28,
+      0.07,
+      0.1
+    ],
+    "done_labels": [
+      "明日可领奖"
+    ],
+    "success_labels": [
+      "获得奖励",
+      "恭喜获得",
+      "获得物品"
+    ],
+    "success_region": [
+      0.25,
+      0.25,
+      0.5,
+      0.5
+    ],
+    "red_dot_region": [
+      0.733,
+      0.285,
+      0.018,
+      0.025
+    ],
+    "verify_red_dot_gone": true,
+    "action_template": {
+      "file": "templates/每日俸禄.png",
+      "reference_size": [
+        3314,
+        2158
+      ],
+      "region": [
+        0.67,
+        0.31,
+        0.08,
+        0.06
+      ],
+      "label": "每日俸禄",
+      "threshold": 0.94,
+      "max_color_error": 22
+    }
+  },
+  "活动": {
+    "enabled": true,
+    "entry_labels": [
+      "活动"
+    ],
+    "entry_region": [
+      0,
+      0.15,
+      0.09,
+      0.65
+    ],
+    "page_markers": [
+      {
+        "labels": [
+          "活动"
+        ],
+        "region": [
+          0.45,
+          0.23,
+          0.1,
+          0.04
+        ],
+        "confidence": 0.4
+      },
+      {
+        "labels": [
+          "充值福利"
+        ],
+        "region": [
+          0.25,
+          0.28,
+          0.09,
+          0.05
+        ]
+      }
+    ],
+    "action_labels": [
+      "领取"
+    ],
+    "action_region": [
+      0.74,
+      0.4,
+      0.09,
+      0.055
+    ],
+    "done_labels": [
+      "已领取"
+    ],
+    "success_labels": [
+      "获得奖励",
+      "恭喜获得",
+      "获得物品"
+    ],
+    "success_region": [
+      0.2,
+      0.2,
+      0.6,
+      0.6
+    ],
+    "free_guard_labels": [
+      "免费好礼"
+    ],
+    "free_guard_region": [
+      0.56,
+      0.37,
+      0.07,
+      0.035
+    ],
+    "free_guard_confidence": 0.4,
+    "red_dot_region": [
+      0.805,
+      0.4,
+      0.015,
+      0.03
+    ],
+    "verify_red_dot_gone": true,
+    "green_button": true
+  },
+  "祈福": {
+    "enabled": true,
+    "entry_labels": [
+      "祈福"
+    ],
+    "entry_region": [
+      0,
+      0.15,
+      0.09,
+      0.65
+    ],
+    "page_markers": [
+      {
+        "labels": [
+          "祈福"
+        ],
+        "region": [
+          0.08,
+          0.29,
+          0.045,
+          0.045
+        ]
+      },
+      {
+        "labels": [
+          "兑换商店"
+        ],
+        "region": [
+          0.9,
+          0.29,
+          0.09,
+          0.045
+        ]
+      }
+    ],
+    "action_labels": [],
+    "action_region": [
+      0.38,
+      0.86,
+      0.08,
+      0.05
+    ],
+    "done_labels": [],
+    "success_labels": [
+      "获得奖励",
+      "恭喜获得",
+      "获得物品"
+    ],
+    "success_region": [
+      0.2,
+      0.2,
+      0.6,
+      0.6
+    ],
+    "action_template": {
+      "file": "templates/免费祈福.png",
+      "reference_size": [
+        3314,
+        2158
+      ],
+      "region": [
+        0.38,
+        0.86,
+        0.08,
+        0.05
+      ],
+      "label": "免费祈福",
+      "threshold": 0.94,
+      "max_color_error": 22
+    },
+    "red_dot_region": [
+      0.45,
+      0.855,
+      0.02,
+      0.025
+    ],
+    "verify_red_dot_gone": true,
+    "verification_attempts": 18
+  },
+  "福利": {
+    "enabled": true,
+    "entry_labels": [
+      "福利"
+    ],
+    "entry_region": [
+      0,
+      0.14,
+      0.09,
+      0.65
+    ],
+    "page_markers": [
+      {
+        "labels": [
+          "福利"
+        ],
+        "region": [
+          0.43,
+          0.22,
+          0.14,
+          0.06
+        ],
+        "confidence": 0.4
+      },
+      {
+        "labels": [
+          "每日签到"
+        ],
+        "region": [
+          0.14,
+          0.35,
+          0.11,
+          0.13
+        ]
+      }
+    ],
+    "action_labels": [
+      "签到"
+    ],
+    "action_region": [
+      0.73,
+      0.73,
+      0.1,
+      0.14
+    ],
+    "done_labels": [
+      "已签到",
+      "今日已签到",
+      "补签"
+    ],
+    "success_labels": [
+      "获得奖励",
+      "恭喜获得",
+      "签到成功",
+      "奖励获得",
+      "获得物品"
+    ],
+    "success_region": [
+      0.25,
+      0.25,
+      0.5,
+      0.5
+    ],
+    "action_template": {
+      "file": "templates/签到按钮.png",
+      "reference_size": [
+        3314,
+        2158
+      ],
+      "region": [
+        0.73,
+        0.73,
+        0.1,
+        0.14
+      ],
+      "label": "签到",
+      "threshold": 0.94,
+      "max_color_error": 22
+    },
+    "done_template": {
+      "file": "templates/签到完成_补签按钮.png",
+      "reference_size": [
+        3314,
+        2158
+      ],
+      "region": [
+        0.73,
+        0.73,
+        0.1,
+        0.14
+      ],
+      "label": "今日已签到（按钮已变为补签）",
+      "threshold": 0.94,
+      "max_color_error": 22
+    }
+  },
+  "公会擂鼓": {
+    "enabled": true,
+    "entry_labels": [
+      "公会"
+    ],
+    "entry_region": [
+      0.7,
+      0.93,
+      0.05,
+      0.07
+    ],
+    "page_markers": [
+      {
+        "labels": [
+          "上周擂鼓榜"
+        ],
+        "region": [
+          0.3,
+          0.3,
+          0.12,
+          0.04
+        ],
+        "confidence": 0.4
+      },
+      {
+        "labels": [
+          "擂鼓记录"
+        ],
+        "region": [
+          0.56,
+          0.3,
+          0.09,
+          0.04
+        ],
+        "confidence": 0.4
+      }
+    ],
+    "action_labels": [
+      "击鼓"
+    ],
+    "action_region": [
+      0.29,
+      0.78,
+      0.08,
+      0.055
+    ],
+    "done_labels": [],
+    "success_labels": [],
+    "success_region": [
+      0.2,
+      0.2,
+      0.6,
+      0.6
+    ],
+    "action_template": {
+      "file": "templates/常山击鼓.png",
+      "reference_size": [
+        3314,
+        2158
+      ],
+      "region": [
+        0.29,
+        0.78,
+        0.08,
+        0.055
+      ],
+      "label": "常山战鼓免费击鼓",
+      "threshold": 0.94,
+      "max_color_error": 22
+    },
+    "free_counter": {
+      "region": [
+        0.23,
+        0.72,
+        0.2,
+        0.045
+      ],
+      "pattern": "击鼓不消耗道具.*今日还可以击鼓([0-3])次",
+      "zero_labels": [
+        "今日的击鼓次数已用完"
+      ]
+    },
+    "repeat": true
+  },
+  "武将抽取": {
+    "enabled": true,
+    "entry_labels": [
+      "武将"
+    ],
+    "entry_region": [
+      0.74,
+      0.93,
+      0.05,
+      0.07
+    ],
+    "page_markers": [
+      {
+        "labels": [
+          "招武将"
+        ],
+        "region": [
+          0.1,
+          0.24,
+          0.065,
+          0.04
+        ]
+      },
+      {
+        "labels": [
+          "常驻招募"
+        ],
+        "region": [
+          0.19,
+          0.24,
+          0.08,
+          0.04
+        ]
+      }
+    ],
+    "action_labels": [
+      "开启"
+    ],
+    "action_region": [
+      0.4,
+      0.7,
+      0.08,
+      0.11
+    ],
+    "done_labels": [],
+    "success_labels": [],
+    "success_region": [
+      0.2,
+      0.2,
+      0.6,
+      0.6
+    ],
+    "free_guard_labels": [
+      "免费开启"
+    ],
+    "free_guard_region": [
+      0.4,
+      0.85,
+      0.08,
+      0.04
+    ],
+    "free_guard_confidence": 0.4,
+    "red_dot_region": [
+      0.463,
+      0.727,
+      0.014,
+      0.026
+    ],
+    "verify_red_dot_gone": true
+  },
+  "摇钱树": {
+    "enabled": false,
+    "reason": "已检查发财树页面，当前显示需要150元宝；没有确认可免费操作的状态，禁用。"
+  }
+}

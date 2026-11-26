@@ -1,0 +1,281 @@
+{
+  "lobby": {
+    "file": "templates_v2/lobby.png",
+    "region": [
+      405,
+      476,
+      150,
+      62
+    ]
+  },
+  "task": {
+    "file": "templates_v2/task.png",
+    "region": [
+      788,
+      239,
+      80,
+      51
+    ]
+  },
+  "experience": {
+    "file": "templates_v2/experience.png",
+    "region": [
+      1272,
+      361,
+      109,
+      105
+    ]
+  },
+  "experience_done": {
+    "file": "templates_v2/experience_done.png",
+    "region": [
+      729,
+      570,
+      240,
+      50
+    ]
+  },
+  "ascension": {
+    "file": "templates_v2/ascension.png",
+    "region": [
+      438,
+      723,
+      267,
+      96
+    ]
+  },
+  "military": {
+    "file": "templates_v2/military.png",
+    "region": [
+      452,
+      293,
+      71,
+      45
+    ]
+  },
+  "scepter": {
+    "file": "templates_v2/scepter.png",
+    "region": [
+      436,
+      293,
+      97,
+      47
+    ]
+  },
+  "military_claim": {
+    "file": "templates_v2/military_claim.png",
+    "region": [
+      784,
+      857,
+      131,
+      49
+    ]
+  },
+  "scepter_claim": {
+    "file": "templates_v2/scepter_claim.png",
+    "region": [
+      928,
+      835,
+      135,
+      50
+    ]
+  },
+  "tree": {
+    "file": "templates_v2/tree.png",
+    "region": [
+      252,
+      294,
+      90,
+      205
+    ]
+  },
+  "tree_done": {
+    "file": "templates_v2/tree_done.png",
+    "region": [
+      667,
+      577,
+      324,
+      45
+    ]
+  },
+  "welfare": {
+    "file": "templates_v2/welfare.png",
+    "region": [
+      787,
+      249,
+      81,
+      49
+    ]
+  },
+  "rank": {
+    "file": "templates_v2/rank.png",
+    "region": [
+      787,
+      239,
+      81,
+      50
+    ]
+  },
+  "event": {
+    "file": "templates_v2/event.png",
+    "region": [
+      780,
+      248,
+      98,
+      49
+    ]
+  },
+  "draw": {
+    "file": "templates_v2/draw.png",
+    "region": [
+      163,
+      260,
+      109,
+      46
+    ]
+  },
+  "blessing": {
+    "file": "templates_v2/blessing.png",
+    "region": [
+      1498,
+      310,
+      126,
+      47
+    ]
+  },
+  "guild_drums": {
+    "file": "templates_v2/guild_drums.png",
+    "region": [
+      496,
+      318,
+      144,
+      47
+    ]
+  },
+  "sign_free": {
+    "file": "templates_v2/sign_free.png",
+    "region": [
+      1210,
+      788,
+      166,
+      151
+    ]
+  },
+  "sign_done": {
+    "file": "templates_v2/sign_done.png",
+    "region": [
+      1210,
+      788,
+      166,
+      151
+    ]
+  },
+  "rank_claim": {
+    "file": "templates_v2/rank_claim.png",
+    "region": [
+      1110,
+      334,
+      133,
+      65
+    ]
+  },
+  "blessing_free": {
+    "file": "templates_v2/blessing_free.png",
+    "region": [
+      630,
+      928,
+      133,
+      54
+    ]
+  },
+  "green_claim": {
+    "file": "templates_v2/green_claim.png",
+    "region": [
+      1195,
+      335,
+      165,
+      558
+    ]
+  },
+  "reward": {
+    "file": "templates_v2/reward.png",
+    "region": [
+      550,
+      300,
+      550,
+      260
+    ]
+  },
+  "guild_home": {
+    "file": "templates_v2/guild_home.png",
+    "region": [
+      781,
+      236,
+      95,
+      42
+    ]
+  },
+  "side_task": {
+    "file": "templates_v2/side_task.png",
+    "region": [
+      31,
+      431,
+      65,
+      45
+    ]
+  },
+  "side_activity": {
+    "file": "templates_v2/side_activity.png",
+    "region": [
+      31,
+      262,
+      66,
+      42
+    ]
+  },
+  "tree_entry": {
+    "file": "templates_v2/tree_entry.png",
+    "region": [
+      1335,
+      710,
+      80,
+      50
+    ]
+  },
+  "guild_done": {
+    "file": "templates_v2/guild_done.png",
+    "region": [
+      380,
+      780,
+      330,
+      65
+    ]
+  },
+  "startup_close": {
+    "file": "templates_v2/startup_close.png",
+    "region": [
+      1388,
+      244,
+      36,
+      36
+    ]
+  },
+  "portal_ol": {
+    "file": "templates_v2/portal_ol.png",
+    "region": [
+      850,
+      730,
+      500,
+      200
+    ]
+  },
+  "portal_ol_hover": {
+    "file": "templates_v2/portal_ol_hover.png",
+    "region": [
+      850,
+      730,
+      500,
+      200
+    ]
+  }
+}
