@@ -27,12 +27,12 @@
     ]
   },
   "experience_done": {
-    "file": "templates_v2/experience_done.png",
+    "file": "templates_v2/experience_done_text.png",
     "region": [
-      729,
-      570,
-      240,
-      50
+      715,
+      550,
+      264,
+      91
     ]
   },
   "ascension": {
@@ -90,12 +90,12 @@
     ]
   },
   "tree_done": {
-    "file": "templates_v2/tree_done.png",
+    "file": "templates_v2/tree_done_text.png",
     "region": [
-      667,
-      577,
-      324,
-      45
+      656,
+      561,
+      344,
+      90
     ]
   },
   "welfare": {
@@ -162,12 +162,12 @@
     ]
   },
   "sign_done": {
-    "file": "templates_v2/sign_done.png",
+    "file": "templates_v2/sign_done_text.png",
     "region": [
-      1210,
-      788,
-      166,
-      151
+      1207,
+      808,
+      135,
+      104
     ]
   },
   "rank_claim": {
@@ -276,6 +276,33 @@
       730,
       500,
       200
+    ]
+  },
+  "sign_done_legacy": {
+    "file": "templates_v2/sign_done.png",
+    "region": [
+      1210,
+      788,
+      166,
+      151
+    ]
+  },
+  "experience_done_legacy": {
+    "file": "templates_v2/experience_done.png",
+    "region": [
+      729,
+      570,
+      240,
+      50
+    ]
+  },
+  "tree_done_legacy": {
+    "file": "templates_v2/tree_done.png",
+    "region": [
+      667,
+      577,
+      324,
+      45
     ]
   }
 }

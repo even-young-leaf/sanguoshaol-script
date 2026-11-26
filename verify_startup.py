@@ -39,7 +39,7 @@ assert any(r['event'] == '宣传弹窗关闭已确认' for r in b.events)
 b.finish()
 print('PASS 领取阶段返回大厅时发现宣传页，关闭并确认后继续')
 
-positives = {'startup-ad.png', 'startup-current.png'}
+positives = {'startup-ad.png', 'startup-current.png', 'startup-reported.png'}
 checked = 0
 for path in (ROOT / 'calibration_v2').glob('*.png'):
     if path.name.endswith('-preview.png'):

@@ -12,6 +12,13 @@ class ZoomGuard:
         # 使用已核对的游戏窗口 PID，避免控制到其他前台应用。
         self.root = ax.AXUIElementCreateApplication(desktop.owner_pid)
         ax.AXUIElementSetMessagingTimeout(self.root, .5)
+        self.cache_seconds = .25
+        self.checked_at = float('-inf')
+        self.checked_context = None
+
+    def context(self):
+        d = self.desktop
+        return (d.owner_pid, d.window_id, d.bounds, d.window_title, getattr(d, 'focus_epoch', 0))
 
     def attr(self, element, key):
         error, value = self.ax.AXUIElementCopyAttributeValue(element, key, None)
@@ -47,9 +54,13 @@ class ZoomGuard:
     def nondefault(self):
         return self.level() != 100
 
-    def ensure(self):
+    def ensure(self, force=False):
+        context = self.context()
+        if not force and context == self.checked_context and time.monotonic() - self.checked_at < self.cache_seconds:
+            return False
         current = self.level()
         if current == 100:
+            self.checked_at, self.checked_context = time.monotonic(), context
             return False
         print(f'检测到页面缩放 {current}%，正在自动恢复为 100%。', flush=True)
         if self.ax.AXUIElementPerformAction(self.zoom_button, 'AXPress'):
@@ -81,6 +92,7 @@ class ZoomGuard:
             if not self.nondefault():
                 time.sleep(.2)
                 print('已确认页面缩放为 100%。', flush=True)
+                self.checked_at, self.checked_context = time.monotonic(), context
                 return True
             time.sleep(.05)
         raise RuntimeError('未能恢复页面缩放为 100%，已停止且未继续点击。')
