@@ -161,7 +161,7 @@ class Bot:
         return self.d.active_time()
 
 
-    def __init__(self, desktop, debug=False, deadline=90, session=None, phase="巡检", keep_runs=20):
+    def __init__(self, desktop, debug=False, deadline=90, session=None, phase="巡检", keep_runs=20, tree_budget=150):
         self.d = desktop
         self.debug = debug
         self.started = self.now()
@@ -171,6 +171,8 @@ class Bot:
         self.phase = phase
         self.events = self.session.events
         self.scaled_templates = {}
+        self.tree_budget = tree_budget
+        self.tree_ledger = None
         self.frames = 0
         self.ocr_calls = 0
         self.spec = json.loads((ROOT / 'templates_v2.json').read_text())
@@ -486,7 +488,7 @@ class Bot:
         for page in range(pages):
             self.wait(anchor)
             for _ in range(16):
-                buttons = self.matches('green_claim', region=region, threshold=.93, multiple=True)
+                buttons = self.claim_buttons(region)
                 if not buttons:
                     break
                 point = buttons[0]
@@ -499,7 +501,7 @@ class Bot:
                 box = (int(point[0] - 60), int(point[1] - 24), 120, 48)
                 self.tap(point, '领取当前已完成的免费任务奖励')
                 if not self.reward_result(anchor,
-                                          verify=lambda: not self.matches('green_claim', region=box, threshold=.93)):
+                                          verify=lambda: not self.claim_buttons(box)):
                     break
                 confirmed += 1
                 self.wait(anchor)
@@ -507,6 +509,47 @@ class Bot:
                 self.d.scroll((1250, 760), -12)
                 time.sleep(.06)
         return confirmed
+
+    def claim_buttons(self, region):
+        found = []
+        for template in ('green_claim', 'task_claim'):
+            if template not in self.templates:
+                continue
+            for point in self.matches(template, region=region, threshold=.93, multiple=True):
+                if any(abs(point[0]-p[0]) < 12 and abs(point[1]-p[1]) < 12 for p in found):
+                    continue
+                sample = np.array(self.last.crop((point[0]-45, point[1]-14, point[0]+45, point[1]+14)))
+                hsv = cv2.cvtColor(sample, cv2.COLOR_RGB2HSV)
+                if np.mean(cv2.inRange(hsv, (35, 70, 40), (95, 255, 255)) > 0) >= .20:
+                    found.append(point)
+        return sorted(found, key=lambda p: (p[1], p[0]))
+
+    def task_silver(self):
+        self.wait('task')
+        rows = self.text((650, 425, 740, 55))
+        eligible = []
+        for text, point in rows:
+            match = (re.fullmatch(r'\s*(\d+)\s*[/／]\s*(3|6|9)\s*', text)
+                     or re.fullmatch(r'\s*(\d{1,2})[1Il|](3|6|9)\s*', text))
+            if match and int(match[1]) >= int(match[2]):
+                eligible.append((int(match[2]), (point[0], point[1]-45)))
+        for threshold, point in eligible:
+            if self.task_silver_done(point):
+                self.log('任务银两已领取', threshold=threshold)
+                continue
+            self.tap(point, f'领取完成{threshold}项任务的银两奖励')
+            self.d.move((800, 180))
+            verified = self.reward_result('task', timeout=3, verify=lambda: self.task_silver_done(point))
+            self.log('任务银两领取', threshold=threshold, verified=verified)
+            self.wait('task')
+
+    def task_silver_done(self, point):
+        x, y = point
+        image = np.array(self.last.crop((x-45, y-45, x+45, y+40)))
+        hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+        red = (((hsv[:, :, 0] < 10) | (hsv[:, :, 0] > 170))
+               & (hsv[:, :, 1] > 130) & (hsv[:, :, 2] > 100))
+        return np.mean(red) > .02  # 银两图标本身为灰色；领取后覆盖红色“已领取”印章。
 
     def activity_rewards(self):
         self.open_side('活动', 'event', '打开活动')
@@ -558,7 +601,9 @@ class Bot:
         self.green_claims('ascension', (1185, 340, 162, 530), pages=6)
         self.log('模块完成', module='羽化飞升', note='只查领取按钮，跳过兑换、前往及未完成项')
         self.navigate((318, 452), 'task', '切换日常任务')
-        self.green_claims('task', (1195, 460, 165, 440), pages=6)
+        count = self.green_claims('task', (1150, 470, 220, 440), pages=6)
+        self.log('日常任务领取完成', confirmed_rewards=count)
+        self.task_silver()
         for module in ('军典', '节钺令'):
             self.passes(module)
         self.lobby()
@@ -673,27 +718,105 @@ class Bot:
         self.simple('祈福')
         self.tree()
 
+    def tree_drops(self):
+        if not self.matches('tree') or self.matches('tree_price_150') or self.matches('tree_done'):
+            return []
+        found = []
+        for name in ('tree_drop', 'tree_drop_alt'):
+            for point in self.matches(name, threshold=.88, multiple=True):
+                if not any(abs(point[0]-p[0]) < 25 and abs(point[1]-p[1]) < 20 for p in found):
+                    found.append(point)
+        if len(found) < 2 and not getattr(self, '_tree_collecting', False):
+            return []
+        return sorted(found, key=lambda p: (p[1], p[0]))
+
+    def tree_result(self, allow_paid_confirmation=False):
+        end = self.now() + 20
+        confirmed_prompt = False
+        while self.now() < end:
+            self.snap()
+            if self.matches('tree_done'):
+                return True
+            drops = self.tree_drops()
+            if drops:
+                self._tree_collecting = True
+                self.tap(drops[0], '拾取发财树掉落的元宝')
+                time.sleep(.12)
+                continue
+            rows = self.text((450, 380, 850, 410))
+            words = ''.join(normalize(text) for text, _ in rows)
+            prices = re.findall(r'(\d+)元宝', words)
+            confirm = next((point for text, point in rows if normalize(text) in ('确定', '确认')), None)
+            if (not confirmed_prompt and confirm and ('砍树' in words or '发财树' in words)
+                    and prices and set(prices) == {'150'}):
+                if not allow_paid_confirmation or self.tree_budget < 150:
+                    cancel = next((point for text, point in rows if normalize(text) == '取消'), None)
+                    if cancel:
+                        self.tap(cancel, '取消未经授权的发财树付费确认')
+                    self.log('未验证', module='发财树', reason='本分支未授权150元宝确认')
+                    return False
+                self.tap(confirm, '确认仅消耗150元宝砍树')
+                confirmed_prompt = True
+                continue
+            if self.dismiss(include_continue=True):
+                continue
+            if '今日已完成砍树' in words:
+                return True
+            time.sleep(.12)
+        self.log('未验证', module='发财树', reason='结果未确认；本日不会重复支出150元宝')
+        return False
+
     def tree(self):
         self.lobby()
         self.tap((1628, 1048), '打开更多菜单')
         self.wait('tree_entry')
         self.navigate(self.matches('tree_entry')[0], 'tree', '进入发财树')
-        if self.matches('tree_done'):
-            self.log('已完成', module='发财树', reason='今日已完成砍树')
-        else:
+        self._tree_collecting = False
+        try:
+            if self.matches('tree_done'):
+                from sgs_tree import TreeSpendLedger
+                (self.tree_ledger or TreeSpendLedger()).confirm()
+                self.log('已完成', module='发财树', reason='今日已完成砍树')
+                return
+            if self.tree_drops():
+                from sgs_tree import TreeSpendLedger
+                self.tree_ledger = self.tree_ledger or TreeSpendLedger()
+                verified = self.tree_result()
+                if verified:
+                    self.tree_ledger.confirm()
+                self.log('继续拾取发财树奖励', additional_yuanbao_budget=0, verified=verified)
+                return
             rows = self.text((650, 630, 420, 200))
-            free = next((p for t, p in rows if normalize(t) in ('免费', '免费砍树', '免费领取')), None)
+            free = next((point for text, point in rows if normalize(text) in ('免费', '免费砍树', '免费领取')), None)
             if free:
                 self.tap(free, '发财树明确免费操作')
-                self.wait('tree')
-                self.log('已提交', module='发财树', verified=False)
-            else:
-                price = [normalize(t) for t, _ in self.text((780, 735, 150, 60))]
-                if any(re.fullmatch(r'150', t) for t in price):
-                    self.log('跳过', module='发财树', reason='当前砍树标价150元宝，按仅免费设置跳过')
-                else:
-                    self.log('跳过', module='发财树', reason='没有明确的免费按钮，不消耗元宝')
-        self.lobby()
+                self.log('发财树领取', yuanbao_budget=0, verified=self.tree_result())
+                return
+            price = [normalize(text) for text, _ in self.text((780, 735, 150, 60))]
+            if '150' not in price:
+                self.log('跳过', module='发财树', reason='未确认免费按钮或150元宝价格')
+                return
+            if self.tree_budget < 150:
+                self.log('跳过', module='发财树', reason='当前砍树标价150元宝，预算为0，不消费')
+                return
+            price_marker = self.matches('tree_price_150')
+            if not price_marker:
+                self.log('跳过', module='发财树', reason='未确认150元宝价格图标，不消费')
+                return
+            if self.tree_ledger is None:
+                from sgs_tree import TreeSpendLedger
+                self.tree_ledger = TreeSpendLedger()
+            if not self.tree_ledger.reserve():
+                self.log('跳过', module='发财树', reason='今日已请求过150元宝砍树，不重复消费')
+                return
+            px, py = price_marker[0]
+            self.tap((px - 35, py - 95), '发财树砍树：本日上限150元宝')
+            verified = self.tree_result(allow_paid_confirmation=True)
+            if verified:
+                self.tree_ledger.confirm()
+            self.log('发财树领取', yuanbao_budget=150, verified=verified)
+        finally:
+            self.lobby()
 
     def flush(self):
         self.session.flush(self.last)
@@ -714,6 +837,7 @@ def main():
                                             '签到', '官阶', '活动', '武将抽取', '祈福', '公会'], default='scan')
     parser.add_argument('--debug', action='store_true')
     parser.add_argument('--keep-runs', type=int, default=20, help='保留最近 N 次运行日志，默认 20')
+    parser.add_argument('--tree-budget', type=int, choices=(0, 150), default=150, help='发财树每日元宝预算，默认150，0禁用付费砍树')
     args = parser.parse_args()
     if args.keep_runs < 1:
         parser.error('--keep-runs 必须大于 0')
@@ -726,6 +850,7 @@ def main():
             return 1
     else:
         bot = Bot(FastDesktop(False), debug=args.debug, keep_runs=args.keep_runs)
+    bot.tree_budget = args.tree_budget
     try:
         bot.snap()
         if not args.execute or args.module == 'scan':

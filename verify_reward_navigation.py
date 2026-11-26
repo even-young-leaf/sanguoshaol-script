@@ -22,7 +22,7 @@ class NoMouse:
 class RewardNavigationTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
-        self.bot = Bot(NoMouse(), session=RunSession(self.temp.name))
+        self.bot = Bot(NoMouse(), session=RunSession(self.temp.name), tree_budget=0)
         self.bot.last = Image.new('RGB', SIZE, (100, 100, 100))
         self.bot.lobby = lambda: None
         self.clicks = []

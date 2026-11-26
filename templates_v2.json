@@ -304,5 +304,41 @@
       324,
       45
     ]
+  },
+  "task_claim": {
+    "file": "templates_v2/task_claim_text.png",
+    "region": [
+      1150,
+      470,
+      220,
+      440
+    ]
+  },
+  "tree_price_150": {
+    "file": "templates_v2/tree_price_150.png",
+    "region": [
+      780,
+      735,
+      150,
+      60
+    ]
+  },
+  "tree_drop": {
+    "file": "templates_v2/tree_drop.png",
+    "region": [
+      380,
+      745,
+      820,
+      190
+    ]
+  },
+  "tree_drop_alt": {
+    "file": "templates_v2/tree_drop_alt.png",
+    "region": [
+      380,
+      745,
+      820,
+      190
+    ]
   }
 }

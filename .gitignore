@@ -8,3 +8,4 @@ fast_runs/
 calibration_v2/
 .env
 .env.*
+.tree-spend.*

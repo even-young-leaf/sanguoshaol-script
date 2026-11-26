@@ -1,24 +1,26 @@
-# 三国杀 OL 免费奖励自动领取
+# 三国杀 OL 奖励自动领取
 
 适用于 macOS + Google Chrome 的本地界面自动化脚本，入口为 [4399 三国杀 OL](https://my.4399.com/yxsgs/)。通过界面截图、图片模板、局部文字识别和鼠标操作巡检已适配的免费奖励。
 
 这是按当前电脑和游戏界面校准的版本，尚未实现跨电脑、任意分辨率或 Windows 支持。
+
+费用策略：除发财树每日最多150元宝外，其余仅处理免费领取。当前账号已授权此例外；如需禁用，运行时加 `--tree-budget 0`。
 
 最新状态识别核对、日志策略及验证边界见 [VALIDATION.md](VALIDATION.md)。
 
 ## 已适配的流程
 
 - 复用 Chrome 已有的 4399 登录状态，从官网自动进入 OL。
-- 每日签到、我要强将体验卡、羽化飞升、日常任务、军典、节钺令。
+- 每日签到、我要强将体验卡、羽化飞升、日常任务及完成3/6/9项任务后的银两宝箱、军典、节钺令。
 - 官阶俸禄、公会免费擂鼓、武将免费单抽、免费祈福。
 - 活动中的免费好礼，以及活跃福利、限时活动两个已适配任务页的可领取按钮；不进入兑换或付费礼包页。
-- 右下角“更多”中的发财树：仅操作明确免费的按钮。
+- 右下角“更多”中的发财树：免费领取或每日最多150元宝砍树，处理掉落元宝和奖励弹窗后退出。
 - 关闭已识别的宣传页及奖励弹窗，并检查关闭结果。
 - 识别“点击任意处／空白处继续或退出”提示，按识别到的位置处理。
 - 切换应用或标签时暂停，切回游戏后继续；暂停时间不计入操作超时。
 - 检查浏览器缩放，偏离校准比例时自动恢复到 100%。
 
-红点只是判断依据之一。脚本还检查页面、按钮和免费条件，不执行购买、补签、兑换或消耗已有抽取券的操作。
+红点只是判断依据之一。脚本还检查页面、按钮和免费条件；除已授权的发财树外，不执行购买、补签、兑换或消耗已有抽取券的操作。
 
 “全部”指以上已适配入口，不代表能领取所有临时活动。部分新增领取分支仍需在实际可领取状态下验证，详见[新版使用说明](新版使用说明.txt)。
 
@@ -52,6 +54,9 @@ chmod +x 启动.command 启动_旧版.command
 # 只读扫描，不点击、不修改缩放
 .venv/bin/python sgs_fast.py --module scan
 
+# 禁用付费砍树，其余照常巡检
+.venv/bin/python sgs_fast.py --module all --execute --tree-budget 0
+
 # 保存过程截图以便排查
 .venv/bin/python sgs_fast.py --module all --execute --debug
 ```
@@ -68,6 +73,7 @@ chmod +x 启动.command 启动_旧版.command
 | `sgs_login.py` | Chrome 标签管理、官网进入及登录就绪检查 |
 | `sgs_zoom.py` | 浏览器缩放检查与恢复 |
 | `sgs_runs.py` | 登录与巡检共用的日志、运行锁及保留策略 |
+| `sgs_tree.py` | 发财树每日150元宝上限及防重复请求记录 |
 | `templates_v2.json`、`templates_v2/` | 快速版界面模板及搜索区域 |
 | `sgs_daily.py`、`recipes.json`、`templates/` | 第一版实现及其模板，也提供快速版使用的基础能力 |
 | `启动_旧版.command`、`使用说明.txt` | 第一版菜单及说明 |
@@ -84,6 +90,8 @@ chmod +x 启动.command 启动_旧版.command
 
 虚拟环境、运行记录、完整校准截图和本机测试日志均不上传。旧版 `runs/` 历史图片已清理；旧版程序仍可自行生成记录，不受快速版保留策略管理。
 
+发财树的本地记录 `.tree-spend.json` 也不上传，按北京时间记录每日操作。付费请求前先记为待确认，确认完成后标记成功；即使结果未确认，当天也不会再次请求付费。重新进入掉落奖励页时可以继续拾取，领取流程退出回大厅。
+
 ## 验证
 
 ```sh
@@ -93,6 +101,7 @@ chmod +x 启动.command 启动_旧版.command
 .venv/bin/python verify_layout.py
 .venv/bin/python verify_maintenance.py
 .venv/bin/python verify_reward_navigation.py
+.venv/bin/python verify_task_tree.py
 .venv/bin/python verify_replay.py
 .venv/bin/python verify_startup.py
 ```
