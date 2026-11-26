@@ -15,6 +15,14 @@ ROOT = Path(__file__).resolve().parent
 SIZE = (1657, 1079)
 
 
+def is_continue_caption(text):
+    text = normalize(text)
+    if any(word in text for word in ('购买', '充值', '兑换', '抽取', '查看', '选择')):
+        return False
+    return bool(re.search(r'(?:点击|轻触|单击).{0,4}(?:任意(?:处|位置|地方|区域)|空白(?:处|位置|区域))', text)
+                or re.search(r'点击屏幕.{0,3}(?:继续|关闭)', text))
+
+
 class FastDesktop(Desktop):
     window_title = '4399三国杀 三国杀OL'
     def __init__(self, execute):
@@ -336,7 +344,27 @@ class Bot:
         self.startup_close_attempts = 0
         return False
 
-    def dismiss(self):
+    def dismiss_continue(self):
+        if not getattr(self.d, 'execute', True):
+            return False
+        if self.now() - getattr(self, '_caption_checked_at', float('-inf')) < .3:
+            return False
+        self._caption_checked_at = self.now()
+        rows = self.text((300, 620, 1080, 430))
+        found = next(((text, point) for text, point in rows if is_continue_caption(text)), None)
+        if not found:
+            self._continuation_tries = 0
+            return False
+        self._continuation_tries = getattr(self, '_continuation_tries', 0) + 1
+        if self._continuation_tries > 4:
+            raise RuntimeError('奖励页继续提示多次点击后仍未退出，已保存画面。')
+        self.tap(found[1], '按奖励提示继续或退出：' + found[0])
+        time.sleep(.1)
+        self.snap()
+        self.log('奖励继续提示已处理')
+        return True
+
+    def dismiss(self, include_continue=False):
         if not getattr(self.d, 'execute', True):
             return False
         if self.dismiss_startup():
@@ -347,7 +375,7 @@ class Bot:
             return True
         if self.matches('experience_done'):
             return False  # 提示条不阻挡页面
-        return False
+        return self.dismiss_continue() if include_continue else False
 
     def wait(self, anchor, timeout=3):
         end = self.now() + timeout
@@ -357,6 +385,8 @@ class Bot:
                 continue
             if self.matches(anchor):
                 return self.last
+            if self.dismiss_continue():
+                continue
             time.sleep(.035)
         raise RuntimeError(f'页面未就绪：{anchor}。已保存最后画面，未继续盲点。')
 
@@ -367,7 +397,7 @@ class Bot:
     def lobby(self):
         for _ in range(7):
             self.snap()
-            if self.dismiss():
+            if self.dismiss(include_continue=True):
                 continue
             if self.matches('lobby'):
                 return
@@ -422,6 +452,9 @@ class Bot:
                 self.dismiss()
                 overlay = True
                 continue
+            if self.dismiss_continue():
+                overlay = True
+                continue
             if self.matches(anchor):
                 if overlay or (verify is not None and verify()):
                     return True
@@ -449,6 +482,7 @@ class Bot:
         self.log('模块完成', module=module, verified=verified)
 
     def green_claims(self, anchor, region, pages=1):
+        confirmed = 0
         for page in range(pages):
             self.wait(anchor)
             for _ in range(16):
@@ -467,10 +501,38 @@ class Bot:
                 if not self.reward_result(anchor,
                                           verify=lambda: not self.matches('green_claim', region=box, threshold=.93)):
                     break
+                confirmed += 1
                 self.wait(anchor)
             if page + 1 < pages:
                 self.d.scroll((1250, 760), -12)
                 time.sleep(.06)
+        return confirmed
+
+    def activity_rewards(self):
+        self.open_side('活动', 'event', '打开活动')
+        for label in ('充消返利', '活跃福利', '限时活动'):
+            rows = self.text((240, 280, 185, 580))
+            point = next((p for text, p in rows if normalize(text).strip('.,。:：') == label), None)
+            if point is None:
+                self.log('活动页未适配', tab=label)
+                continue
+            self.tap(point, '打开活动页：' + label)
+            self.d.move((800, 180))
+            time.sleep(.2)
+            self.wait('event')
+            if label == '充消返利':
+                rows = self.text((850, 380, 350, 150))
+                free = next((p for text, p in rows if '免费好礼' in text), None)
+                if free is None:
+                    self.log('跳过', module='活动', tab=label, reason='未确认免费好礼行')
+                    continue
+                region = (1150, int(free[1] + 10), 220, 105)
+                count = self.green_claims('event', region)
+            else:
+                # 仅已适配的任务型活动；不进入礼包、兑换、抽取等活动页。
+                count = self.green_claims('event', (1150, 380, 220, 490), pages=4)
+            self.log('活动页检查完成', tab=label, confirmed_rewards=count)
+        self.lobby()
 
     def task_bundle(self):
         self.tasks_open()
@@ -484,7 +546,7 @@ class Bot:
             time.sleep(.02)
         if self.matches('experience_done'):
             self.log('已完成', module='每日体验卡', reason='今日已获得过体验卡')
-        elif self.dismiss():
+        elif self.dismiss(include_continue=True):
             self.log('奖励已确认', module='每日体验卡')
         else:
             text = ''.join(normalize(t) for t, _ in self.text((600, 520, 500, 150)))
@@ -525,28 +587,17 @@ class Bot:
         elif module == '官阶':
             self.lobby()
             self.navigate((1426, 1048), 'rank', '打开官阶')
-            box = (1213, 307, 28, 29)
-            if self.dot(box) and self.matches('rank_claim'):
-                self.tap(self.matches('rank_claim')[0], '免费每日俸禄')
+            points = self.matches('rank_claim')
+            box = (int(points[0][0] + 15), int(points[0][1] - 75), 70, 70) if points else None
+            if points and self.dot(box):
+                self.tap(points[0], '免费每日俸禄')
                 ok = self.reward_result('rank',
                                          verify=lambda: not self.dot(box))
                 self.log('模块完成', module=module, verified=ok)
             else:
                 self.log('跳过', module=module, reason='没有待领取俸禄红点')
         elif module == '活动':
-            self.open_side('活动', 'event', '打开活动')
-            if self.dot((1333, 430, 27, 32)):
-                rows = self.text((925, 395, 125, 38))
-                if not any('免费好礼' in t for t, _ in rows):
-                    raise RuntimeError('当前活动不是已校准的免费好礼页。')
-                points = self.matches('green_claim', region=(1210, 438, 153, 60), threshold=.93)
-                if points:
-                    self.tap(points[0], '活动免费好礼')
-                    ok = self.reward_result('event',
-                                             verify=lambda: not self.dot((1333, 430, 27, 32)))
-                    self.log('模块完成', module=module, verified=ok)
-            else:
-                self.log('跳过', module=module, reason='免费好礼没有红点')
+            self.activity_rewards()
         elif module == '武将抽取':
             self.lobby()
             self.navigate((1528, 1048), 'draw', '打开招募')
@@ -637,7 +688,11 @@ class Bot:
                 self.wait('tree')
                 self.log('已提交', module='发财树', verified=False)
             else:
-                self.log('跳过', module='发财树', reason='没有明确的免费按钮，不消耗元宝')
+                price = [normalize(t) for t, _ in self.text((780, 735, 150, 60))]
+                if any(re.fullmatch(r'150', t) for t in price):
+                    self.log('跳过', module='发财树', reason='当前砍树标价150元宝，按仅免费设置跳过')
+                else:
+                    self.log('跳过', module='发财树', reason='没有明确的免费按钮，不消耗元宝')
         self.lobby()
 
     def flush(self):

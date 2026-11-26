@@ -23,6 +23,9 @@ class Replay:
     def tap(self, point):
         self.clicks.append(point)
 
+    def read(self, image):
+        return []  # 这些回放画面没有奖励继续文字。
+
 
 if not (ROOT / 'calibration_v2' / 'startup-current.png').exists():
     print('SKIP 本机完整校准截图未包含在仓库中，无法执行宣传页回放。')
